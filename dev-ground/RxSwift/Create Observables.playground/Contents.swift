@@ -49,7 +49,7 @@ nextExample(topic: "from", execute: true) {
     
     let array = [1, 2, 3]
     let _ = Observable<[Int]>
-        .from(array)
+        .from(optional: array)
         .debug()
         .subscribe { event in
             print(event)
@@ -100,28 +100,9 @@ nextExample(topic: "create", execute: true) {
         return Disposables.create { print("disposed") }
     }
     
-    let concatSeq = multipleSeq.concat()
+    let concatSeq = multipleSeq.concat() //concat - объединяет первый со вторым
     concatSeq.subscribe({ event in
-        print(event)
-    })
-}
-
-nextExample(topic: "just vs from vs of", execute: true) {
-    
-    let observableJust = Observable<Int>.just(7)
-    observableJust.map({ element in
-        print(element)
-    })
-    
-    let observableFrom = Observable<Int>.from([1, 2, 3])
-    observableFrom.map({ element in
-        print(element)
-    })
-    
-    
-    let observableOf = Observable<Int>.of(1, 2, 3)
-    observableOf.map({ element in
-        print(element)
+        print(event) // 1 -> 2 -> 3 -> A -> B -> C
     })
 }
 
@@ -150,4 +131,57 @@ nextExample(topic: "deferred", execute: true) {
         print("j = \(event)")
     })
 }
+
+nextExample(topic: "just vs from vs of", execute: true) {
+    
+    let observableJust = Observable<Int>
+        .just(7)
+        //.debug()
+        //.map { print($0) }
+        .subscribe { print($0) }
+    
+//    observableJust.map({ element in
+//        print(element)
+//    })
+    
+    let observableFrom = Observable<Int>
+        .from([1, 2, 3])
+        .debug()
+    
+    observableFrom.map({ element in
+        print(element)
+    })
+    
+    
+    let observableOf = Observable<Int>
+        .of(1, 2, 3)
+        .debug()
+    
+    observableOf.map({ element in
+        print(element)
+    })
+}
+
+//empty - эмитит пустую последовательность + completed
+nextExample(topic: "empty", execute: true) {
+    
+    let sequence = Observable<Int>.empty()
+    sequence.subscribe { print($0) }
+}
+
+//error - эмитит пустую последовательность + error()
+nextExample(topic: "error", execute: true) {
+    
+    let sequence = Observable<Int>
+        .error(RxError.unknown)
+    sequence.subscribe { print($0) }
+}
+
+//interval - эмитит бесконечную последовательность с 0 с шагом 1 и с указанным периодом
+nextExample(topic: "intervalTime", execute: true) {
+    
+    let sequence = Observable<Int>.interval(1, scheduler: MainScheduler.instance)
+    sequence.subscribe { print($0) }
+}
+
 
